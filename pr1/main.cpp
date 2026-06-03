@@ -1,4 +1,5 @@
 #include <QWidget>
+#include <QTranslator>
 #include <QString>
 #include <QTextStream>
 #include <QApplication>
@@ -39,11 +40,14 @@ public:
         connect(m_open, &QPushButton::clicked, this, &TextEditor::openFile);
         connect(m_save, &QPushButton::clicked, this, &TextEditor::saveFile);
 
-        m_titleBar = new QTitleBarTempInfo{"Text editor", this};
+        m_titleBar = new QTitleBarTempInfo{tr("Text editor"), this};
         m_titleBar->addWidget(m_save);
         m_titleBar->addWidget(m_open);
 
-        m_toolBar = new QToolBar("Format panel", this);
+        m_toolBar = new QToolBar(tr("Format panel"), this);
+
+        m_toolBar->setMovable(false); 
+        m_toolBar->setFixedHeight(40);
 
         m_text = new QTextEdit{this};
         m_text->setTabChangesFocus(true);
@@ -63,7 +67,7 @@ public:
         italicAction->setFont(italicFont);
         connect(italicAction, &QAction::triggered, this, &TextEditor::toggleItalic);
 
-        QAction *colorAction = m_toolBar->addAction("Color");
+        QAction *colorAction = m_toolBar->addAction(tr("Color"));
         connect(colorAction, &QAction::triggered, this, &TextEditor::changeColor);
 
         m_fontBox = new QFontComboBox(this);
@@ -72,7 +76,7 @@ public:
         m_toolBar->addWidget(m_fontBox);
 
         m_sizeBox = new QComboBox(this);
-        m_sizeBox->addItems({"10", "12", "14", "16", "18", "24", "36"});
+        m_sizeBox->addItems({"8", "10", "12", "14", "16", "18", "24", "36", "48", "72"});
         m_sizeBox->setCurrentText("12");
         connect(m_sizeBox, &QComboBox::currentTextChanged, this, &TextEditor::changeFontSize);
         m_toolBar->addWidget(m_sizeBox);
@@ -97,14 +101,14 @@ private slots:
     }
 
     void changeColor() {
-        QColor color = QColorDialog::getColor(Qt::black, this, "Выберите цвет текста");
+        QColor color = QColorDialog::getColor(Qt::black, this, tr("Select text color"));
         if (color.isValid()) {
             m_text->setTextColor(color);
         }
     }
 
     void openFile() {
-        QString filePath = QFileDialog::getOpenFileName(this, "Открыть файл", "", "HTML Files (*.html);;Text Files (*.txt)");
+        QString filePath = QFileDialog::getOpenFileName(this, tr("Open file"), "", "HTML Files (*.html);;Text Files (*.txt)");
         if (!filePath.isEmpty()) {
             QFile file(filePath);
             if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -115,7 +119,7 @@ private slots:
     }
 
     void saveFile() {
-        QString filePath = QFileDialog::getSaveFileName(this, "Сохранить файл", "", "HTML Files (*.html)");
+        QString filePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", "HTML Files (*.html)");
         if (!filePath.isEmpty()) {
             QFile file(filePath);
             if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -124,10 +128,33 @@ private slots:
             }
         }
     }
+
+protected:
+    void paintEvent(QPaintEvent *event) {
+        QStyleOption opt = QStyleOption{};
+        opt.initFrom(this);
+        QPainter p(this);
+        style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    }
 };
 
 int main(int argc, char ** argv) {
     QApplication app{argc, argv};
+
+    QFile styleFile("main.qss");
+    if (styleFile.open(QFile::ReadOnly)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        app.setStyleSheet(styleSheet);
+    }
+
+    QTranslator translator;
+
+    QLocale systemLocale = QLocale::system();
+
+    if (translator.load(systemLocale, "TextEditor", "_", ":/i18n")) {
+        app.installTranslator(&translator);
+    }
+
     TextEditor window{};
     window.resize(500, 500);
     window.show();

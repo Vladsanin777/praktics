@@ -4,32 +4,32 @@
 <context>
     <name>TextEditor</name>
     <message>
-        <location filename="main.cpp" line="43"/>
+        <location filename="main.cpp" line="44"/>
         <source>Text editor</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="47"/>
+        <location filename="main.cpp" line="48"/>
         <source>Format panel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="70"/>
+        <location filename="main.cpp" line="90"/>
         <source>Color</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="104"/>
+        <location filename="main.cpp" line="131"/>
         <source>Select text color</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="111"/>
+        <location filename="main.cpp" line="138"/>
         <source>Open file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="122"/>
+        <location filename="main.cpp" line="149"/>
         <source>Save file</source>
         <translation></translation>
     </message>

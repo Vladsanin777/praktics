@@ -33,6 +33,7 @@ private:
 public:
     TextEditor(QWidget * parent = nullptr) : QWidget{parent} {
         m_open = new QPushButton{"🗁", this};
+        m_open->setObjectName("open");
         m_open->setFixedSize(30, 30);
         m_save = new QPushButton{"🖫", this};
         m_save->setFixedSize(30, 30);
@@ -48,6 +49,15 @@ public:
 
         m_toolBar->setMovable(false); 
         m_toolBar->setFixedHeight(40);
+        m_toolBar->setMovable(false);
+        m_toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+        m_toolBar->setAllowedAreas(Qt::TopToolBarArea);
+        m_toolBar->setContentsMargins(5, 2, 5, 2);
+        m_toolBar->setMinimumWidth(500);
+
+        if (m_toolBar->layout()) {
+            m_toolBar->layout()->setSpacing(5);
+        }
 
         m_text = new QTextEdit{this};
         m_text->setTabChangesFocus(true);
@@ -61,25 +71,42 @@ public:
         boldAction->setFont(QFont("Arial", 10, QFont::Bold));
         connect(boldAction, &QAction::triggered, this, &TextEditor::toggleBold);
 
+        QWidget *boldButton = m_toolBar->widgetForAction(boldAction);
+        if (boldButton) {
+            boldButton->setFixedSize(30, 30);
+        }
+
         QFont italicFont("Arial", 10);
         italicFont.setItalic(true);
         QAction *italicAction = m_toolBar->addAction("I");
         italicAction->setFont(italicFont);
         connect(italicAction, &QAction::triggered, this, &TextEditor::toggleItalic);
 
+        QWidget *italicButton = m_toolBar->widgetForAction(italicAction);
+        if (italicButton) {
+            italicButton->setFixedSize(30, 30);
+        }
+
         QAction *colorAction = m_toolBar->addAction(tr("Color"));
         connect(colorAction, &QAction::triggered, this, &TextEditor::changeColor);
+
+        QWidget *colorButton = m_toolBar->widgetForAction(colorAction);
+        if (colorButton) {
+            colorButton->setFixedSize(60, 30);
+        }
 
         m_fontBox = new QFontComboBox(this);
         m_fontBox->setCurrentFont(QFont("Arial"));
         connect(m_fontBox, &QFontComboBox::currentFontChanged, this, &TextEditor::changeFontFamily);
         m_toolBar->addWidget(m_fontBox);
+        m_fontBox->setFixedHeight(30);
 
         m_sizeBox = new QComboBox(this);
         m_sizeBox->addItems({"8", "10", "12", "14", "16", "18", "24", "36", "48", "72"});
         m_sizeBox->setCurrentText("12");
         connect(m_sizeBox, &QComboBox::currentTextChanged, this, &TextEditor::changeFontSize);
         m_toolBar->addWidget(m_sizeBox);
+        m_sizeBox->setFixedHeight(30);
     }
 
 private slots:

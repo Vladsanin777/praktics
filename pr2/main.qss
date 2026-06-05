@@ -1,0 +1,33 @@
+QLineEdit, QTextEdit,
+QPushButton, TextEditor,
+QToolBar QToolButton,
+QComboBox, QFontComboBox,
+QCheckBox::indicator {
+    color: white;
+    border: 2px solid white;
+    border-radius: 6px;
+}
+
+QLabel {
+    color: white;
+}
+
+TextEditor {
+    background-color: #317d05;
+}
+
+QPushButton, QLineEdit,
+QToolBar QToolButton,
+QComboBox, QFontComboBox,
+QTextEdit, QCheckBox::indicator {
+    background-color: #51057d;
+}
+
+QCheckBox::indicator::checked,
+QtEasy--Widgets--QSystemsButtons #close,
+QPushButton#open,
+QComboBox::drop-down,
+QFontComboBox::drop-down,
+QPushButton#send {
+    background-color: #7d0541;
+}

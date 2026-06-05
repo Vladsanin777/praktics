@@ -25,6 +25,7 @@ QTextEdit, QCheckBox::indicator {
 
 QCheckBox::indicator::checked,
 QtEasy--Widgets--QSystemsButtons #close,
+QtEasy--Widgets--QOpenButton,
 QPushButton#open,
 QComboBox::drop-down,
 QFontComboBox::drop-down,

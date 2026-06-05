@@ -12,19 +12,17 @@
 #include <QComboBox>
 #include <QFontComboBox>
 #include <QFile>
-#include <QtEasy/TitlesBars/QTitleBarTempInfo.hpp>
+#include <QtEasy/TitlesBars/QTitleBarFilesOperations.hpp>
 
 
-using QtEasy::TitlesBars::QTitleBarTempInfo;
+using QtEasy::TitlesBars::QTitleBarFilesOperations;
 
 class TextEditor : public QWidget {
     Q_OBJECT
 
 private:
     QVBoxLayout * m_layout{nullptr};
-    QTitleBarTempInfo * m_titleBar{nullptr};
-    QPushButton * m_open{nullptr};
-    QPushButton * m_save{nullptr};
+    QTitleBarFilesOperations * m_titleBar{nullptr};
     QToolBar * m_toolBar{nullptr};
     QComboBox * m_sizeBox{nullptr};
     QFontComboBox * m_fontBox{nullptr};
@@ -32,23 +30,19 @@ private:
 
 public:
     TextEditor(QWidget * parent = nullptr) : QWidget{parent} {
-        m_open = new QPushButton{"🗁", this};
-        m_open->setObjectName("open");
-        m_open->setFixedSize(30, 30);
-        m_save = new QPushButton{"🖫", this};
-        m_save->setFixedSize(30, 30);
+        m_titleBar = new QTitleBarFilesOperations{tr("Text editor"),
+                tr("Open file"), tr("Save file"), tr("Save as file"),
+                "HTML Files (*.html)", this};
 
-        connect(m_open, &QPushButton::clicked, this, &TextEditor::openFile);
-        connect(m_save, &QPushButton::clicked, this, &TextEditor::saveFile);
+        m_titleBar->setFixedHeight(40);
 
-        m_titleBar = new QTitleBarTempInfo{tr("Text editor"), this};
-        m_titleBar->addWidget(m_save);
-        m_titleBar->addWidget(m_open);
+        connect(m_titleBar, &QTitleBarFilesOperations::opened, this, &TextEditor::openFile);
+        connect(m_titleBar, &QTitleBarFilesOperations::saved, this, &TextEditor::saveFile);
 
         m_toolBar = new QToolBar(tr("Format panel"), this);
 
         m_toolBar->setMovable(false); 
-        m_toolBar->setFixedHeight(40);
+        m_toolBar->setFixedHeight(44);
         m_toolBar->setMovable(false);
         m_toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
         m_toolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -69,6 +63,7 @@ public:
 
         QAction *boldAction = m_toolBar->addAction("B");
         boldAction->setFont(QFont("Arial", 10, QFont::Bold));
+        boldAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_B));
         connect(boldAction, &QAction::triggered, this, &TextEditor::toggleBold);
 
         QWidget *boldButton = m_toolBar->widgetForAction(boldAction);
@@ -80,6 +75,7 @@ public:
         italicFont.setItalic(true);
         QAction *italicAction = m_toolBar->addAction("I");
         italicAction->setFont(italicFont);
+        italicAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_I));
         connect(italicAction, &QAction::triggered, this, &TextEditor::toggleItalic);
 
         QWidget *italicButton = m_toolBar->widgetForAction(italicAction);
@@ -135,25 +131,14 @@ private slots:
     }
 
     void openFile() {
-        QString filePath = QFileDialog::getOpenFileName(this, tr("Open file"), "", "HTML Files (*.html);;Text Files (*.txt)");
-        if (!filePath.isEmpty()) {
-            QFile file(filePath);
-            if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                QTextStream in(&file);
-                m_text->setHtml(in.readAll());
-            }
+        QString content = m_titleBar->read();
+        if (!content.isEmpty()) {
+            m_text->setHtml(content);
         }
     }
 
     void saveFile() {
-        QString filePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", "HTML Files (*.html)");
-        if (!filePath.isEmpty()) {
-            QFile file(filePath);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                QTextStream out(&file);
-                out << m_text->toHtml();
-            }
-        }
+        m_titleBar->write(m_text->toHtml());
     }
 
 protected:

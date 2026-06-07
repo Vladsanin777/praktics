@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets LinguistTools Qml Quick)
 
 
 find_path(QT_EASY_INCLUDE_DIR QtEasy/ PATHS /usr/local/include /usr/include)
@@ -29,6 +29,8 @@ target_include_directories(PaintEditor PRIVATE ${QT_EASY_INCLUDE_DIR})
 target_link_libraries(PaintEditor PRIVATE 
     Qt6::Core 
     Qt6::Widgets
+    Qt6::Qml
+    Qt6::Quick
     ${QT_EASY_SHARED_LIB}
 )
 
